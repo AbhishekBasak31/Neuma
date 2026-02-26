@@ -174,7 +174,7 @@ export const resolvers = {
       const token = user.generateAccessToken();
       user.lastLoginAt = new Date();
       await user.save();
-
+    const isProd = process.env.NODE_ENV === "production";
       context.res.cookie("AccessToken", token, {
         httpOnly: true,
         secure: isProd,
@@ -187,6 +187,7 @@ export const resolvers = {
     },
 
     logoutUser: async (_, __, context) => {
+        const isProd = process.env.NODE_ENV === "production";
       context.res.clearCookie("AccessToken", {
         httpOnly: true,
         secure: isProd,

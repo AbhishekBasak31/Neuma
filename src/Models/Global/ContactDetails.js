@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const contactDetailsSchema = new mongoose.Schema({
   Htext: { type: String, default: "" },
-  Dtext: { type: String, default: "" },
+  
   whour: { type: String, default: "" },
   email: { type: String, default: "" },
   phone: { type: String, default: "" },

@@ -37,10 +37,11 @@ export const typeDefs = `#graphql
 
   type Social { _id: ID!, icon: String!, link: String! }
   type QuickLink { _id: ID!, name: String!, link: String! }
-type Footer { 
+  
+  type Footer { 
     _id: ID!
     logo: String!
-    logo2: String!    # <-- ADDED THIS
+    logo2: String!    
     dtext: String!
     copyright: String!
     socials: [Social]
@@ -52,6 +53,8 @@ type Footer {
   
   type User { _id: ID!, email: String!, createdAt: String, lastLoginAt: String }
   type AuthResponse { message: String!, user: User, token: String }
+ 
+  type Owner { _id: ID!, Htext: String!, dtext: String!, img: String!, ownername: String!, Desig: String!, createdAt: String }
 
   # ==========================================
   # 2. INPUT TYPES
@@ -106,6 +109,8 @@ type Footer {
 
     getMe: User
     getUsers: [User]
+    getOwner: [Owner]
+    getOwnerById(id: ID!): Owner
   }
 
   # ==========================================
@@ -129,7 +134,7 @@ type Footer {
     deleteEventSec(id: ID!): String!
 
     createEvent(img: String!, location: String!, title: String!, catagory: String!, date: String!, time: String!, description: String!, hostcontact: String!, hostname: String!, isActive: Boolean): Event!
-  updateEvent(id: ID!, img: String, location: String, title: String, catagory: String, date: String, time: String, description: String, hostcontact: String, hostname: String, isActive: Boolean): Event!
+    updateEvent(id: ID!, img: String, location: String, title: String, catagory: String, date: String, time: String, description: String, hostcontact: String, hostname: String, isActive: Boolean): Event!
     deleteEvent(id: ID!): String!
 
     createEventPartner(Img: String!, altText: String!): EventPartner!
@@ -185,5 +190,9 @@ type Footer {
     logoutUser: String!
     updateSelf(email: String, password: String): User!
     deleteUser(id: ID!): String!
+
+    createOwner(Htext: String!, dtext: String!, img: String!, ownername: String!, Desig: String!): Owner!
+    updateOwner(id: ID!, Htext: String, dtext: String, img: String, ownername: String, Desig: String): Owner!
+    deleteOwner(id: ID!): String!
   }
 `;

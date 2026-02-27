@@ -17,6 +17,8 @@ import { QuickLinks } from "../../Models/Global/QuickLinks.js";
 import { Contact } from "../../Models/Global/Contact.js";
 import { Booking } from "../../Models/Global/Bookings.js";
 import { User } from "../../Models/Global/User.js";
+// ADDED THE OWNER IMPORT HERE
+import { Owner } from "../../Models/HomePage/OwnerSpeech.js"; 
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -63,6 +65,10 @@ export const resolvers = {
     getBookings: async () => await Booking.find().sort({ createdAt: -1 }),
     getBookingById: async (_, { id }) => await Booking.findById(id),
 
+    // --- OWNER QUERIES ---
+    getOwner: async () => await Owner.find(),
+    getOwnerById: async (_, { id }) => await Owner.findById(id),
+
     getMe: async (_, __, context) => {
       if (!context.user) throw new Error("Unauthorized");
       return await User.findById(context.user.id).select("-password");
@@ -87,24 +93,14 @@ export const resolvers = {
     updateEventSec: async (_, { id, ...updates }) => await EventSec.findByIdAndUpdate(id, { $set: updates }, { new: true }),
     deleteEventSec: async (_, { id }) => { await EventSec.findByIdAndDelete(id); return "Deleted"; },
 
-   createEvent: async (_, args) => {
-      // 1. We pass the raw args (which have NO slug) into the Mongoose model
+    createEvent: async (_, args) => {
       const newEvent = new Event(args);
-      
-      // 2. When we call .save(), your Mongoose pre("save") hook catches it, 
-      // looks at the title, generates the slug, and saves it to the database!
       return await newEvent.save();
     },
     updateEvent: async (_, { id, ...updates }) => {
-      // Best Practice: We do NOT update the slug when updating an event.
-      // If you change a live URL later, it breaks SEO and user bookmarks.
-      return await Event.findByIdAndUpdate(
-        id, 
-        { $set: updates }, 
-        { new: true }
-      );
+      return await Event.findByIdAndUpdate(id, { $set: updates }, { new: true });
     },
-  deleteEvent: async (_, { id }) => { 
+    deleteEvent: async (_, { id }) => { 
       await Event.findByIdAndDelete(id); 
       return "Deleted"; 
     },
@@ -157,6 +153,11 @@ export const resolvers = {
     updateBooking: async (_, { id, ...updates }) => await Booking.findByIdAndUpdate(id, { $set: updates }, { new: true }),
     deleteBooking: async (_, { id }) => { await Booking.findByIdAndDelete(id); return "Deleted"; },
 
+    // --- OWNER MUTATIONS ---
+    createOwner: async (_, args) => await new Owner(args).save(),
+    updateOwner: async (_, { id, ...updates }) => await Owner.findByIdAndUpdate(id, { $set: updates }, { new: true }),
+    deleteOwner: async (_, { id }) => { await Owner.findByIdAndDelete(id); return "Deleted"; },
+
     registerUser: async (_, { email, password }) => {
       const existing = await User.findOne({ email });
       if (existing) throw new Error("User already exists");
@@ -174,7 +175,7 @@ export const resolvers = {
       const token = user.generateAccessToken();
       user.lastLoginAt = new Date();
       await user.save();
-    const isProd = process.env.NODE_ENV === "production";
+      const isProd = process.env.NODE_ENV === "production";
       context.res.cookie("AccessToken", token, {
         httpOnly: true,
         secure: isProd,
@@ -232,3 +233,5 @@ export const resolvers = {
     quickLinks: async (parent) => await QuickLinks.find({ _id: { $in: parent.quickLinks } })
   }
 };
+
+  
